@@ -14,7 +14,7 @@ const useAuth = () => {
     const user = ref(JSON.parse(localStorage.getItem('user')) || null)
     const isAuthenticated = computed(() => !!user.value);
     console.log("user value us ", user)
-    const handleCredentialResponse = async(response) => {
+    const handleCredentialResponse = async (response) => {
         isConnecting.value = false;
         try {
             const res = await fetch('http://localhost:8000/api/auth/google', {
@@ -36,7 +36,7 @@ const useAuth = () => {
             localStorage.setItem('user', JSON.stringify(data.user));
             user.value = data.user;
             isConnected.value = true;
-            window.google ? .accounts.id.cancel ? .();
+            window.google ?.accounts.id.cancel ?.();
             removeGoogleButton();
             setTimeout(() => router.push('/view'), 1500);
         } catch (err) {
@@ -52,7 +52,7 @@ const useAuth = () => {
     };
 
     const removeGoogleButton = () => {
-        document.getElementById('google-button-container') ? .remove();
+        document.getElementById('google-button-container') ?.remove();
     };
 
     const renderGoogleButton = () => {
@@ -105,7 +105,7 @@ const useAuth = () => {
     };
 
     const loadGoogleScript = () => {
-        if (window.google ? .accounts ? .id) {
+        if (window.google ?.accounts ?.id) {
             googleScriptLoaded.value = true;
             return;
         }
