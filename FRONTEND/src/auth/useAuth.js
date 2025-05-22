@@ -1,19 +1,20 @@
 // src/composables/useAuth.js
-import { ref, computed  } from 'vue';
+import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 
 const GOOGLE_CLIENT_ID = '1049521897741-fhi2jk9jfqq0145eq3a0nku8fl6bg664.apps.googleusercontent.com';
 
 const useAuth = () => {
+
     const router = useRouter();
     const isConnected = ref(false);
     const isConnecting = ref(false);
     const errorMessage = ref('');
     const googleScriptLoaded = ref(false);
-const user = ref(JSON.parse(localStorage.getItem('user')) || null)
-const isAuthenticated = computed(() => !!user.value);
-console.log("user value us ", user)
-    const handleCredentialResponse = async (response) => {
+    const user = ref(JSON.parse(localStorage.getItem('user')) || null)
+    const isAuthenticated = computed(() => !!user.value);
+    console.log("user value us ", user)
+    const handleCredentialResponse = async(response) => {
         isConnecting.value = false;
         try {
             const res = await fetch('http://localhost:8000/api/auth/google', {
@@ -35,7 +36,7 @@ console.log("user value us ", user)
             localStorage.setItem('user', JSON.stringify(data.user));
             user.value = data.user;
             isConnected.value = true;
-            window.google?.accounts.id.cancel?.();
+            window.google ? .accounts.id.cancel ? .();
             removeGoogleButton();
             setTimeout(() => router.push('/view'), 1500);
         } catch (err) {
@@ -51,7 +52,7 @@ console.log("user value us ", user)
     };
 
     const removeGoogleButton = () => {
-        document.getElementById('google-button-container')?.remove();
+        document.getElementById('google-button-container') ? .remove();
     };
 
     const renderGoogleButton = () => {
@@ -104,7 +105,7 @@ console.log("user value us ", user)
     };
 
     const loadGoogleScript = () => {
-        if (window.google?.accounts?.id) {
+        if (window.google ? .accounts ? .id) {
             googleScriptLoaded.value = true;
             return;
         }
@@ -136,8 +137,8 @@ console.log("user value us ", user)
         errorMessage,
         connectGoogle,
         loadGoogleScript,
-          user,
-         isAuthenticated,
+        user,
+        isAuthenticated,
         logout,
     };
 }
