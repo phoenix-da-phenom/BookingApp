@@ -18,10 +18,10 @@ A sleek, modern appointment scheduling application built with **Vue.js**. This a
 ## 🛠️ Tech Stack
 
 - **Frontend Framework**: [Vue.js](https://vuejs.org/)
-- **Styling**: CSS (or Tailwind / Bootstrap if you're using them)
+- **Styling**: CSS ( Tailwind )
 - **State Management**: Vue's Composition API (`ref`, `computed`, `watch`)
 - **Date Handling**: JavaScript Date methods
-- **Optional Backend**: (If applicable, mention Laravel, Firebase, etc.)
+- **Optional Backend**:  Laravel
 
 ## 🚀 Getting Started
 
@@ -35,7 +35,7 @@ A sleek, modern appointment scheduling application built with **Vue.js**. This a
 1. **Clone the repository:**
 
    ```bash
-   git clone https://github.com/yourusername/appointment-booking-app.git
+   git clone https://github.com/phoenix-da-phenom/BookingApp.git
    cd appointment-booking-app
 2. Install dependencies:
    npm install

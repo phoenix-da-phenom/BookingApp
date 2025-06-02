@@ -1,17 +1,17 @@
 <template>
   <div class="p-6 max-w-6xl mx-auto">
-    <!-- Month/Week Navigation -->
+    <!-- Month/Year Navigation -->
     <div class="flex justify-between items-center mb-6">
       <h2 class="text-2xl font-bold text-gray-800">
         {{ currentMonth }} {{ currentYear }}
       </h2>
       <div class="flex space-x-2">
-        <button @click="previousWeek" class="p-2 rounded-lg bg-white border border-gray-200 hover:bg-gray-50">
+        <button @click="previousMonth" class="p-2 rounded-lg bg-white border border-gray-200 hover:bg-gray-50">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
           </svg>
         </button>
-        <button @click="nextWeek" class="p-2 rounded-lg bg-white border border-gray-200 hover:bg-gray-50">
+        <button @click="nextMonth" class="p-2 rounded-lg bg-white border border-gray-200 hover:bg-gray-50">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
           </svg>
@@ -43,7 +43,8 @@
           <!-- Date Number -->
           <div class="absolute top-2 right-2 text-sm font-medium" :class="{
             'text-blue-600': isToday(date.date),
-            'text-gray-500': !isToday(date.date)
+            'text-gray-500': !isToday(date.date) && isCurrentMonth(date.date),
+            'text-gray-400': !isCurrentMonth(date.date)
           }">
             {{ date.label }}
           </div>
@@ -73,29 +74,71 @@ import { ref, computed } from 'vue'
 import dayjs from 'dayjs'
 
 // Setup days and initial events
-const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 const currentDate = ref(dayjs())
 const draggedEvent = ref(null)
 
 // Sample events
 const events = ref([
-  { id: 1, title: 'Team Meeting', date: dayjs().startOf('week').add(1, 'day').format('YYYY-MM-DD'), color: 'blue' },
-  { id: 2, title: 'Doctor Appointment', date: dayjs().startOf('week').add(3, 'day').format('YYYY-MM-DD'), color: 'green' },
-  { id: 3, title: 'Lunch with Client', date: dayjs().startOf('week').add(5, 'day').format('YYYY-MM-DD'), color: 'purple' }
+  { id: 1, title: 'Team Meeting', date: dayjs().date(5).format('YYYY-MM-DD'), color: 'blue' },
+  { id: 2, title: 'Doctor Appointment', date: dayjs().date(15).format('YYYY-MM-DD'), color: 'green' },
+  { id: 3, title: 'Lunch with Client', date: dayjs().date(25).format('YYYY-MM-DD'), color: 'purple' }
 ])
 
-// Compute current week's calendar
+// Compute current month's calendar
 const calendarDates = computed(() => {
-  const startOfWeek = currentDate.value.startOf('week')
-  return [...Array(7)].map((_, i) => {
-    const date = startOfWeek.add(i, 'day')
-    return {
+  const startOfMonth = currentDate.value.startOf('month')
+  const endOfMonth = currentDate.value.endOf('month')
+  
+  // Get the start day of the month (0-6, Sun-Sat)
+  const startDay = startOfMonth.day()
+  
+  // Get the total days in month
+  const daysInMonth = endOfMonth.date()
+  
+  // Get days from previous month to show
+  const daysFromPrevMonth = startDay
+  
+  // Get days from next month to show (to fill the last row)
+  const totalCells = Math.ceil((daysInMonth + daysFromPrevMonth) / 7) * 7
+  const daysFromNextMonth = totalCells - (daysInMonth + daysFromPrevMonth)
+  
+  const dates = []
+  
+  // Add previous month's days
+  for (let i = daysFromPrevMonth - 1; i >= 0; i--) {
+    const date = startOfMonth.subtract(i + 1, 'day')
+    dates.push({
       date: date.format('YYYY-MM-DD'),
       label: date.format('D'),
-      isCurrentMonth: date.month() === currentDate.value.month(),
+      isCurrentMonth: false,
+      events: []
+    })
+  }
+  
+  // Add current month's days
+  for (let i = 0; i < daysInMonth; i++) {
+    const date = startOfMonth.add(i, 'day')
+    dates.push({
+      date: date.format('YYYY-MM-DD'),
+      label: date.format('D'),
+      isCurrentMonth: true,
       events: events.value.filter(e => e.date === date.format('YYYY-MM-DD'))
-    }
-  })
+    })
+  }
+  
+  // Add next month's days
+  for (let i = 0; i < daysFromNextMonth; i++) {
+    const date = endOfMonth.add(i + 1, 'day')
+    dates.push({
+      date: date.format('YYYY-MM-DD'),
+      label: date.format('D'),
+      isCurrentMonth: false,
+      events: []
+    })
+  }
+  
+  return dates
 })
 
 // Current month and year display
@@ -103,12 +146,12 @@ const currentMonth = computed(() => currentDate.value.format('MMMM'))
 const currentYear = computed(() => currentDate.value.format('YYYY'))
 
 // Navigation methods
-const previousWeek = () => {
-  currentDate.value = currentDate.value.subtract(1, 'week')
+const previousMonth = () => {
+  currentDate.value = currentDate.value.subtract(1, 'month')
 }
 
-const nextWeek = () => {
-  currentDate.value = currentDate.value.add(1, 'week')
+const nextMonth = () => {
+  currentDate.value = currentDate.value.add(1, 'month')
 }
 
 // Date helpers
@@ -155,7 +198,7 @@ const openEventModal = (event) => {
 </script>
 
 <style scoped>
-/* List transition for week change */
+/* List transition for month change */
 .list-enter-active,
 .list-leave-active {
   transition: all 0.3s ease;
