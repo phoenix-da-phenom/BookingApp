@@ -2,7 +2,8 @@
 import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 
-const GOOGLE_CLIENT_ID = '1049521897741-fhi2jk9jfqq0145eq3a0nku8fl6bg664.apps.googleusercontent.com';
+const GOOGLE_CLIENT_ID =
+    import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
 const useAuth = () => {
 
@@ -14,7 +15,7 @@ const useAuth = () => {
     const user = ref(JSON.parse(localStorage.getItem('user')) || null)
     const isAuthenticated = computed(() => !!user.value);
     console.log("user value us ", user)
-    const handleCredentialResponse = async (response) => {
+    const handleCredentialResponse = async(response) => {
         isConnecting.value = false;
         try {
             const res = await fetch('http://localhost:8000/api/auth/google', {
